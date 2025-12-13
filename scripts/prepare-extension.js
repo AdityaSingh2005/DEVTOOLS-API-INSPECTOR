@@ -16,19 +16,17 @@ function main() {
     // 1. Remove files starting with "_" or "__" in the root of out
     const files = fs.readdirSync(OUT_DIR);
     files.forEach(file => {
+        // Skip _next directory for a moment, we will rename it
+        if (file === '_next') return;
+
+        // Remove files starting with "_" or "__" or specific Next.js build artifacts
         if (file.startsWith('_') || file.startsWith('__')) {
-            // Skip _next directory for a moment, we will rename it
-            if (file === '_next') return;
-
             const filePath = path.join(OUT_DIR, file);
-            const stat = fs.statSync(filePath);
-
-            if (stat.isDirectory()) {
-                console.log(`Removing directory: ${file}`);
+            console.log(`Removing build artifact: ${file}`);
+            try {
                 fs.rmSync(filePath, { recursive: true, force: true });
-            } else {
-                console.log(`Removing file: ${file}`);
-                fs.rmSync(filePath);
+            } catch (e) {
+                console.error(`Failed to remove ${file}:`, e);
             }
         }
     });
@@ -134,12 +132,25 @@ function replaceInDir(dir) {
             // Global replace for /_next/ -> /next-assets/
             content = content.replace(/\/_next\//g, `/${ASSET_DIR_NAME}/`);
 
-            // Also handle cases where it might be "_next/" (without leading slash, e.g. in some JS strings)
+            // Handle relative paths (e.g., ./_next/ or just _next/)
+            content = content.replace(/\.\/_next\//g, `./${ASSET_DIR_NAME}/`);
+
+            // Handle HTML attributes with explicit quotes (both single and double)
+            content = content.replace(/=\"_next\//g, `="${ASSET_DIR_NAME}/`);
+            content = content.replace(/='_next\//g, `='${ASSET_DIR_NAME}/`);
+
+            // Also handle cases where it might be "_next/" (without leading slash, e.g. in some JS strings or encoded)
             // But be careful not to break other things. Usually next.js webpack chunks strictly use paths.
             // A safer bet for JS bundles is replacing key strings.
 
             content = content.replace(/\"_next\//g, `"${ASSET_DIR_NAME}/`);
             content = content.replace(/'_next\//g, `'${ASSET_DIR_NAME}/`);
+
+            // Handle CSS url() paths if any
+            content = content.replace(/url\(\/_next\//g, `url(/${ASSET_DIR_NAME}/`);
+
+            // Fix for Next.js 14+ specific static paths in JS
+            content = content.replace(/"static\/chunks\/pages\/"/g, `"static/chunks/pages/"`); // Just to be safe
 
             if (content !== originalContent) {
                 fs.writeFileSync(itemPath, content);

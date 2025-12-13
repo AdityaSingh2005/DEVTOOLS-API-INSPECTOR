@@ -3,7 +3,7 @@
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export type PreviewType = "html" | "image" | "pdf" | null
+export type PreviewType = "html" | "image" | "pdf" | "csv" | "dat" | null
 
 interface ContentPreviewProps {
     type: PreviewType
@@ -24,14 +24,21 @@ export function ContentPreview({ type, content, onClose }: ContentPreviewProps) 
                     </Button>
                 </div>
                 <div className="flex-1 overflow-hidden bg-white/5 dark:bg-black/20 p-4 flex flex-col">
-                    {type === "html" && (
+                    {(type === "html" || type === "csv" || type === "dat") && (
                         <div className="bg-white rounded-md flex-1 overflow-hidden border border-border">
-                            <iframe
-                                srcDoc={`
+                            {content.startsWith("http") || content.startsWith("/") ? (
+                                <iframe
+                                    src={content}
+                                    className="w-full h-full"
+                                    title={`${type.toUpperCase()} Preview`}
+                                />
+                            ) : (
+                                <iframe
+                                    srcDoc={`
                                     <html>
                                         <head>
                                             <style>
-                                                body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; padding: 1rem; color: #0f172a; }
+                                                body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; padding: 1rem; color: #0f172a; white-space: pre-wrap; font-family: monospace; }
                                                 table { border-collapse: collapse; width: 100%; border: 1px solid #e2e8f0; }
                                                 th, td { border: 1px solid #e2e8f0; padding: 0.5rem; text-align: left; }
                                                 th { background-color: #f8fafc; font-weight: 600; }
@@ -41,9 +48,10 @@ export function ContentPreview({ type, content, onClose }: ContentPreviewProps) 
                                         <body>${content}</body>
                                     </html>
                                 `}
-                                className="w-full h-full"
-                                title="Preview"
-                            />
+                                    className="w-full h-full"
+                                    title={`${type.toUpperCase()} Preview`}
+                                />
+                            )}
                         </div>
                     )}
                     {type === "image" && (

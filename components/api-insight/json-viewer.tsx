@@ -49,10 +49,13 @@ export function JsonViewer({ data, searchQuery, onPreview }: JsonViewerProps) {
         // Check for URLs (http, https, or relative)
         if (lowerValue.startsWith("http") || lowerValue.startsWith("/")) {
             // Check for extensions (relax regex to allow query params)
-            // valid extensions: .png, .jpg, .jpeg, .gif, .webp, .svg, .pdf
+            // valid extensions: .png, .jpg, .jpeg, .gif, .webp, .svg, .pdf, .html
             // Regex: \.(ext)([?#].*)?$
             if (/\.(jpeg|jpg|gif|png|webp|svg)($|[?#])/i.test(value)) return "image"
             if (/\.pdf($|[?#])/i.test(value)) return "pdf"
+            if (/\.html($|[?#])/i.test(value)) return "html"
+            if (/\.csv($|[?#])/i.test(value)) return "csv"
+            if (/\.dat($|[?#])/i.test(value)) return "dat"
 
             if (lowerValue.includes("blob:")) return "image" // Fallback for blob URLs if we can't be sure
         }
