@@ -2,7 +2,6 @@
 
 **API Insight** is a powerful Chrome DevTools extension designed to capture, organize, and analyze network traffic with a superior developer experience. Built with Next.js and Shadcn UI, it offers a modern, clean interface for debugging APIs.
 
-![API Insight Preview](./public/icon-128.png)
 
 ## 🚀 Key Features
 
@@ -34,22 +33,3 @@
 - **Resizable Panels**: Customize the width of the request list and details panel.
 - **Clean JSON Viewer**: Syntax highlighting, search within JSON, and copy-assist.
 - **Minimalist Table**: No clutter—just the essential methods, URLs, status, and timing.
-
----
-
-## 🏗️ Tech Stack
-
-- **Framework**: [Next.js](https://nextjs.org/) (App Directory, Static Export)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Components**: [Shadcn UI](https://ui.shadcn.com/) (Radix Primitives)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **State**: React Hooks + Context
-
-## 📁 Project Structure
-
-- `components/api-insight`: Core extension components.
-    - `api-insight-panel.tsx`: Main entry and state manager.
-    - `use-network-monitor.ts`: Hook interfacing with `chrome.devtools.network`.
-    - `json-viewer.tsx`: Recursive JSON tree with preview detection.
-- `scripts/prepare-extension.js`: Node script for post-build CSP compliance.
-- `public/devtools.js`: Extension entry point.
