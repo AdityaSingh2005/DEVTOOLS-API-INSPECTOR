@@ -22,50 +22,18 @@
 - **Visual Feedback**: Shows an "Eye" icon :eye: next to inspectable content.
 - **Full-Height Previews**: Opens a modal with a full-size preview of the content (HTML renders in a secure sandbox).
 
-### 4. **Developer-First UI**
+### 4. **Instant Request Replay**
+- **Modify & Resend**: Edit methods, headers, and body payloads to endlessly test API endpoints.
+- **Strict Headers**: Automatically sanitizes headers to ensure successful replay without CORS or browser errors.
+
+### 5. **WebSocket Inspection**
+- **Real-Time Frames**: View WebSocket messages in real-time as they are sent and received.
+- **Visual Grouping**: Sent and received frames are visually distinct for easy following of the conversation.
+
+### 6. **Developer-First UI**
 - **Resizable Panels**: Customize the width of the request list and details panel.
 - **Clean JSON Viewer**: Syntax highlighting, search within JSON, and copy-assist.
 - **Minimalist Table**: No clutter—just the essential methods, URLs, status, and timing.
-
----
-
-## 🛠️ Development Workflow
-
-The project is built as a **Next.js** application that exports a static site, which is then post-processed to work as a Chrome Extension.
-
-### Prerequisites
-- Node.js (v18+)
-- npm
-
-### 1. Local Development
-For UI development, you can run the app in the browser using mock data.
-
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) to see the interface.
-*Note: Real network capture only works when loaded as an extension.*
-
-### 2. Build for Chrome
-To generate the extension package:
-
-```bash
-npm run build:extension
-```
-
-This command:
-1.  Runs `next build` (Static Export).
-2.  Runs `scripts/prepare-extension.js` to:
-    -   Sanitize filenames (Next.js `_next` folder issue).
-    -   Extract inline scripts (CSP compliance).
-    -   Prepare the `out` directory.
-
-### 3. Install in Chrome
-1.  Open Chrome and navigate to `chrome://extensions`.
-2.  Enable **Developer mode** in the top right.
-3.  Click **Load unpacked**.
-4.  Select the `out` directory inside this project folder.
-5.  Open DevTools (F12) -> **API Insight** tab.
 
 ---
 
