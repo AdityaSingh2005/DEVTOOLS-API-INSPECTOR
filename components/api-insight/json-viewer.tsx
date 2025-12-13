@@ -54,6 +54,7 @@ export function JsonViewer({ data, searchQuery, onPreview }: JsonViewerProps) {
             if (/\.(jpeg|jpg|gif|png|webp|svg)($|[?#])/i.test(value)) return "image"
             if (/\.pdf($|[?#])/i.test(value)) return "pdf"
             if (/\.html($|[?#])/i.test(value)) return "html"
+            if (/\.xml($|[?#])/i.test(value)) return "xml"
             if (/\.csv($|[?#])/i.test(value)) return "csv"
             if (/\.dat($|[?#])/i.test(value)) return "dat"
 
@@ -81,6 +82,14 @@ export function JsonViewer({ data, searchQuery, onPreview }: JsonViewerProps) {
         const trimmed = value.trim()
         if ((trimmed.startsWith("<") && trimmed.endsWith(">")) || trimmed.includes("</table>") || trimmed.includes("</div>") || trimmed.includes("<br>")) {
             return "html"
+        }
+
+        // Check for Base64
+        // Heuristic: Length % 4 === 0, matches base64 regex, not a common word/number, length > 20 to avoid noise.
+        // Regex allows A-Z, a-z, 0-9, +, /, and = padding.
+        // We exclude lines with spaces to avoid normal sentences.
+        if (value.length > 20 && value.length % 4 === 0 && !value.includes(" ") && /^[A-Za-z0-9+/]+={0,2}$/.test(value)) {
+            return "base64"
         }
 
         return null

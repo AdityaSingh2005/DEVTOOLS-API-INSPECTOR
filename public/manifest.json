@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "DevTools API Inspector",
+    "name": "API Insight",
     "version": "1.0",
     "description": "A unified interface to capture, analyze, and debug network traffic directly in DevTools.",
     "devtools_page": "devtools.html",
@@ -8,8 +8,8 @@
         "tabs",
         "storage",
         "webRequest",
-        "webRequestBlocking",
-        "scripting"
+        "scripting",
+        "clipboardWrite"
     ],
     "host_permissions": [
         "<all_urls>"
@@ -20,5 +20,26 @@
     },
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'"
-    }
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "ws-proxy.js"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "ws-hook.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
 }

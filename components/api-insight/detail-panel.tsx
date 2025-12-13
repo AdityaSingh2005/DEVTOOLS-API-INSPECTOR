@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X } from "lucide-react"
+import { X, RotateCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { APICall } from "./types"
 import { StatusBadge } from "./status-badge"
@@ -9,6 +9,7 @@ import { OverviewTab } from "./tabs/overview-tab"
 import { RequestTab } from "./tabs/request-tab"
 import { ResponseTab } from "./tabs/response-tab"
 import { ContentPreview, PreviewType } from "./content-preview"
+import { ReplayModal } from "./replay-modal"
 
 interface DetailPanelProps {
   call: APICall
@@ -20,6 +21,7 @@ interface DetailPanelProps {
 export function DetailPanel({ call, allCalls, onClose, searchQuery }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "request" | "response">("response")
   const [previewData, setPreviewData] = useState<{ type: PreviewType; content: string } | null>(null)
+  const [showReplay, setShowReplay] = useState(false)
 
   return (
     <div className="flex h-full flex-col bg-card relative">
@@ -33,6 +35,9 @@ export function DetailPanel({ call, allCalls, onClose, searchQuery }: DetailPane
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowReplay(true)} title="Replay Request">
+            <RotateCw className="h-4 w-4" />
+          </Button>
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose} title="Close">
             <X className="h-4 w-4" />
           </Button>
@@ -46,8 +51,8 @@ export function DetailPanel({ call, allCalls, onClose, searchQuery }: DetailPane
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`border-b-2 px-3 py-2 text-xs font-medium capitalize transition-colors ${activeTab === tab
-                ? "border-primary text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
           >
             {tab}
@@ -72,6 +77,13 @@ export function DetailPanel({ call, allCalls, onClose, searchQuery }: DetailPane
           type={previewData.type}
           content={previewData.content}
           onClose={() => setPreviewData(null)}
+        />
+      )}
+
+      {showReplay && (
+        <ReplayModal
+          call={call}
+          onClose={() => setShowReplay(false)}
         />
       )}
     </div>

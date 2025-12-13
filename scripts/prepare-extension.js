@@ -13,14 +13,16 @@ function main() {
 
     console.log('Cleaning up Chrome Extension build...');
 
-    // 1. Remove files starting with "_" or "__" in the root of out
+    // 1. Remove files starting with "_" or "__" or "." in the root of out
     const files = fs.readdirSync(OUT_DIR);
     files.forEach(file => {
         // Skip _next directory for a moment, we will rename it
         if (file === '_next') return;
 
-        // Remove files starting with "_" or "__" or specific Next.js build artifacts
-        if (file.startsWith('_') || file.startsWith('__')) {
+        // Remove files starting with "_" or "__" or "." (like .DS_Store)
+        if (file.startsWith('_') || file.startsWith('.') || file === '404.html') {
+            // 404.html is sometimes problematic or not needed if _not-found is present, but let's strictly stick to the user error.
+            // The user error specifically mentioned __next.._tree.txt.
             const filePath = path.join(OUT_DIR, file);
             console.log(`Removing build artifact: ${file}`);
             try {

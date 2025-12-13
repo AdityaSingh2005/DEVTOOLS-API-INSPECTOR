@@ -1,3 +1,5 @@
+import { Download } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import type { APICall } from "../types"
 
 interface ImagePreviewProps {
@@ -12,8 +14,24 @@ export function ImagePreview({ call }: ImagePreviewProps) {
     size: `${(call.responseSize / 1024).toFixed(1)} KB`,
   }
 
+  const handleDownload = () => {
+    const link = document.createElement('a')
+    link.href = imageUrl
+    link.download = `image_${Date.now()}.${metadata.mimeType?.split('/')[1] || 'png'}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button variant="outline" size="sm" className="gap-2 bg-transparent" onClick={handleDownload}>
+          <Download className="h-4 w-4" />
+          Download
+        </Button>
+      </div>
+
       {/* Image Preview */}
       <div className="flex items-center justify-center rounded-lg border border-border bg-secondary/30 p-4 min-h-[400px]">
         <img

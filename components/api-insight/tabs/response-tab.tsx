@@ -25,9 +25,13 @@ export function ResponseTab({ call, searchQuery, onPreview }: ResponseTabProps) 
 
   const handleCopy = async () => {
     try {
-      const textToCopy = typeof call.responseBody === 'object' && call.responseBody !== null
-        ? JSON.stringify(call.responseBody, null, 2)
-        : String(call.responseBody)
+      let textToCopy = ""
+
+      if (typeof call.responseBody === 'object' && call.responseBody !== null) {
+        textToCopy = JSON.stringify(call.responseBody, null, 2)
+      } else {
+        textToCopy = String(call.responseBody)
+      }
 
       // Try modern clipboard API first
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -73,6 +77,50 @@ export function ResponseTab({ call, searchQuery, onPreview }: ResponseTabProps) 
 
     if (call.responseType === "binary") {
       return <BinaryPreview call={call} />
+    }
+
+    if (call.responseType === "ws") {
+      const frames = (call.responseBody as any[]) || []
+
+      // Group sequential frames of the same type
+      const groupedFrames = frames.reduce((acc: any[], frame) => {
+        const lastGroup = acc[acc.length - 1]
+        if (lastGroup && lastGroup.type === frame.type) {
+          lastGroup.frames.push(frame)
+        } else {
+          acc.push({
+            type: frame.type,
+            frames: [frame]
+          })
+        }
+        return acc
+      }, [])
+
+      return (
+        <div className="space-y-4 font-mono text-xs max-h-[400px] overflow-auto border border-border rounded-md p-4 bg-background">
+          {frames.length === 0 ? (
+            <div className="text-muted-foreground">No messages captured yet.</div>
+          ) : (
+            groupedFrames.map((group, i) => (
+              <div key={i} className={`flex gap-3 ${group.type === 'send' ? 'flex-row-reverse' : ''}`}>
+                <div className={`p-2 rounded-lg max-w-[80%] ${group.type === 'send' ? 'bg-primary/10 text-right' : 'bg-muted'}`}>
+                  <div className={`text-[10px] font-bold mb-1 opacity-50 uppercase ${group.type === 'send' ? 'text-green-600' : 'text-blue-500'}`}>
+                    {group.type === 'send' ? 'Client' : 'Server'}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="break-all whitespace-pre-wrap">
+                      {group.frames.map((f: any) => String(f.data)).join("")}
+                    </div>
+                  </div>
+                  <div className="text-[10px] opacity-40 mt-1">
+                    {new Date(group.frames[group.frames.length - 1].timestamp).toLocaleTimeString()}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )
     }
 
     // Default: JSON viewer
